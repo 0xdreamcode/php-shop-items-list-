@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+</head>
+
+<body>
+
+  <form  name="item" method="post">
+    <div>
+      SKU:
+      <input name="sku" type="text" class="field {{ ('sku' in err|keys) ? 'invalid' : '' }}"/>
+    </div>
+    <div>
+      Name:
+      <input name="name" type="text" class="field {{ ('name' in err|keys) ? 'invalid' : '' }}"/>
+    </div>
+    <div>
+      Price:
+      <input name="price" type="text" class="field {{ ('price' in err|keys) ? 'invalid' : '' }}"/>
+    </div>
+    <div>
+      Type:
+      <select class="field" name="type" id="attributetype">
+        {% for t in types %}
+          <option id="{{ t.id }}" selected>{{ t.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div style="flex-direction: column;" id="attr">
+
+    </div>
+
+    <input type="submit" value="Add"/><a href="/">list</a>
+  </form>
+</body>
+</html>
+<script>
+  var type = document.getElementById('attributetype');
+  var attributes = document.getElementById('attr')
+
+  var types = JSON.parse(`{{ types|json_encode()|raw  }}`);
+  console.log(types)
+  function setAttribute (e) {
+    attributes.innerHTML = '';
+    var selType = types.find(t => t.name == type.value)
+    for (attr in selType.attributes)
+    {
+      var attr = selType.attributes[attr]
+      var a = document.createElement('div')
+      var text = document.createElement('input')
+      a.innerText += Object.keys(attr)[0]
+      text.name = `attributes[${Object.keys(attr)[0]}]`;
+      text.placeholder = attr[Object.keys(attr)[0]]
+      text.classList.add('field')
+      a.appendChild(text)
+      attributes.appendChild(a)
+    }
+  }
+  type.addEventListener('change', setAttribute)
+  setAttribute();
+
+  console.log(attributes.children)
+</script>
+<style>
+.invalid {
+  background: #FFEEEE;
+}
+form > div {
+  display: flex;
+  justify-content: space-between;
+  width: 600px;
+}
+form > div > div {
+  display: flex;
+  justify-content: space-between;
+  width: 600px;
+}
+form .field {
+  display: flex;
+  justify-content: space-between;
+  width: 300px;
+  box-sizing: border-box;
+}
+.field > input {
+  width: 100%;
+}
+</style>
